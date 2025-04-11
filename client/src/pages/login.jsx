@@ -6,11 +6,18 @@ import axios from "axios";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useEffect } from "react";
 import { FcGoogle } from "react-icons/fc";
 function login() {
   const router = useRouter();
-  const [{}, dispatch] = useStateProvider();
+  const [{ userInfo, newUser }, dispatch] = useStateProvider();
+
+  useEffect(() => {
+    if (userInfo?.id && !newUser) {
+      router.push("/");
+    }
+  }, [newUser, userInfo, router]);
+
   const handleLogin = async () => {
     const provider = new GoogleAuthProvider();
     const {
@@ -29,11 +36,24 @@ function login() {
               name,
               email,
               profileImage,
-              status: "Available",
+              status: "",
             },
           });
           router.push("/onboarding");
           return;
+        } else {
+          const { id, name, email, profilePicture: profileImage } = data.data;
+          dispatch({
+            type: reducerCases.SET_USER_INFO,
+            userInfo: {
+              id,
+              name,
+              email,
+              profileImage,
+              status: data?.success,
+            },
+          });
+          router.push("/");
         }
       }
     } catch (error) {
