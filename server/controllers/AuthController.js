@@ -60,3 +60,38 @@ export const onBoardUser = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getAllUser = async (req, res, next) => {
+  try {
+    const prisma = getPrismaInstance();
+    const users = await prisma.user.findMany({
+      orderBy: {
+        name: "asc",
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        profilePicture: true,
+        about: true,
+      },
+    });
+    const usersGroupedByInitialLetter = {};
+
+    users.forEach((user) => {
+      const initialLetter = user.name[0].toUpperCase();
+      if (!usersGroupedByInitialLetter[initialLetter]) {
+        usersGroupedByInitialLetter[initialLetter] = [];
+      }
+      usersGroupedByInitialLetter[initialLetter].push(user);
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Users fetched successfully",
+      users: usersGroupedByInitialLetter,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
