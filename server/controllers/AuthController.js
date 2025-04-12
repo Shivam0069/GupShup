@@ -64,7 +64,19 @@ export const onBoardUser = async (req, res, next) => {
 export const getAllUser = async (req, res, next) => {
   try {
     const prisma = getPrismaInstance();
+    const { id: userId } = req.params;
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: "User ID is required",
+      });
+    }
     const users = await prisma.user.findMany({
+      where: {
+        NOT: {
+          id: parseInt(userId),
+        },
+      },
       orderBy: {
         name: "asc",
       },
