@@ -1,4 +1,6 @@
 import getPrismaInstance from "../utils/PrismaClient.js";
+import { renameSync } from "fs";
+import fs from "fs";
 
 export const addMessage = async (req, res, next) => {
   try {
@@ -66,6 +68,42 @@ export const getMessage = async (req, res, next) => {
       data: { messageStatus: "read" },
     });
     res.status(200).json({ messages });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const addImageMessage = async (req, res, next) => {
+  console.log("Image message route hit");
+  try {
+    if (req.file) {
+      const date = Date.now();
+      const uploadDir = "uploads/images";
+
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+
+      const fileName = `${uploadDir}/${date}_${req.file.originalname}`;
+      renameSync(req.file.path, fileName);
+
+      const prisma = getPrismaInstance();
+      const { from, to } = req.query;
+
+      if (from && to) {
+        const message = await prisma.messages.create({
+          data: {
+            message: fileName,
+            type: "image",
+            sender: { connect: { id: parseInt(from) } },
+            receiver: { connect: { id: parseInt(to) } },
+          },
+        });
+        return res.status(201).json({ message });
+      }
+      return res.status(400).send("From and to are required.");
+    }
+    return res.status(400).send("Image is required.");
   } catch (error) {
     next(error);
   }

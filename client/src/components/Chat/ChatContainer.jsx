@@ -1,14 +1,15 @@
 import { useStateProvider } from "@/context/StateContext";
 import { calculateTime } from "@/utils/CalculateTime";
 import MessageStatus from "../common/MessageStatus";
+import ImageMessage from "./ImageMessage";
 
 function ChatContainer() {
   const [{ messages, userInfo, currentChatUser }] = useStateProvider();
 
   return (
-    <div className="h-[80vh] w-full relative flex-grow flex items-end justify-between overflow-auto custom-scrollbar">
+    <div className="h-[80vh] w-full relative flex-grow   overflow-auto custom-scrollbar">
       <div className="bg-chat-background bg-fixed h-full w-full opacity-5  fixed left-0 top-0 z-0"></div>
-      <div className="mx-10 my-6 relative bottom-0 z-40 left-0 w-full">
+      <div className="mx-10 my-6 relative bottom-0 z-40 left-0 ">
         <div className="flex w-full">
           <div className="flex flex-col justify-end w-full gap-1 overflow-auto">
             {messages.map((message, index) => {
@@ -44,6 +45,9 @@ function ChatContainer() {
                         </span>
                       </div>
                     </div>
+                  )}
+                  {message.type === "image" && (
+                    <ImageMessage message={message} />
                   )}
                 </div>
               );
