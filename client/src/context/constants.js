@@ -6,6 +6,7 @@ export const reducerCases = {
   SET_MESSAGES: "SET_MESSAGES",
   SET_SOCKET: "SET_SOCKET",
   ADD_MESSAGE: "ADD_MESSAGE",
+  IS_ONLINE: "IS_ONLINE",
 };
 
 export const SocketCases = {

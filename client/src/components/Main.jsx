@@ -80,6 +80,10 @@ function Main() {
             type: reducerCases.SET_MESSAGES,
             messages: response.data.messages,
           });
+          dispatch({
+            type: reducerCases.IS_ONLINE,
+            isOnline: response.data?.isOnline,
+          });
         }
       } catch (error) {
         console.log(error);

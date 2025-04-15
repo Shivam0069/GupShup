@@ -2,6 +2,8 @@ import { useStateProvider } from "@/context/StateContext";
 import { calculateTime } from "@/utils/CalculateTime";
 import MessageStatus from "../common/MessageStatus";
 import ImageMessage from "./ImageMessage";
+import dynamic from "next/dynamic";
+const VoiceMessage = dynamic(() => import("./VoiceMessage"), { ssr: false });
 
 function ChatContainer() {
   const [{ messages, userInfo, currentChatUser }] = useStateProvider();
@@ -48,6 +50,9 @@ function ChatContainer() {
                   )}
                   {message.type === "image" && (
                     <ImageMessage message={message} />
+                  )}
+                  {message.type === "audio" && (
+                    <VoiceMessage message={message} />
                   )}
                 </div>
               );

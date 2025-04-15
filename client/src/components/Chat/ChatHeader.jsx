@@ -7,7 +7,7 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { useStateProvider } from "@/context/StateContext";
 
 function ChatHeader() {
-  const [{ currentChatUser }] = useStateProvider();
+  const [{ currentChatUser, isOnline }] = useStateProvider();
 
   return (
     <div className="h-16 px-4 py-3 flex justify-between items-center bg-panel-header-background z-10">
@@ -20,7 +20,9 @@ function ChatHeader() {
               ({currentChatUser?.email})
             </span>
           </span>
-          <span className="text-secondary text-sm">online/offline</span>
+          <span className="text-secondary text-sm">
+            {isOnline ? "Online" : "Offline"}
+          </span>
         </div>
       </div>
       <div className=" flex gap-6">

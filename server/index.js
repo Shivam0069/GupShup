@@ -10,6 +10,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use("/uploads/images", express.static("uploads/images"));
+app.use("/uploads/recordings", express.static("uploads/recordings"));
 
 app.use("/api/auth", AuthRoutes);
 app.use("/api/messages", MessageRoutes);
@@ -29,6 +30,7 @@ global.onlineUsers = new Map();
 io.on("connection", (socket) => {
   global.chatSocket = socket;
   socket.on("add-user", (userId) => {
+    console.log("User connected:", userId, socket.id);
     onlineUsers.set(userId, socket.id);
   });
   socket.on("send-msg", (data) => {
@@ -38,6 +40,15 @@ io.on("connection", (socket) => {
         from: data.from,
         message: data.message,
       });
+    }
+  });
+  socket.on("disconnect", () => {
+    for (const [userId, socketId] of onlineUsers.entries()) {
+      if (socketId === socket.id) {
+        onlineUsers.delete(userId);
+        console.log("User disconnected:", userId, socket.id);
+        break;
+      }
     }
   });
 });
