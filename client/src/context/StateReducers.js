@@ -8,6 +8,7 @@ export const initialState = {
   messages: [],
   socket: undefined,
   isOnline: false,
+  messagesSearch: false,
 };
 
 const reducer = (state, action) => {
@@ -27,11 +28,14 @@ const reducer = (state, action) => {
       return { ...state, socket: action.socket };
     case reducerCases.ADD_MESSAGE:
       return { ...state, messages: [...state.messages, action.newMessage] };
+
     case reducerCases.IS_ONLINE:
       return {
         ...state,
         isOnline: action.isOnline,
       };
+    case reducerCases.SET_MESSAGES_SEARCH:
+      return { ...state, messagesSearch: !state.messagesSearch };
     default:
       return state;
   }
