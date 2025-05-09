@@ -68,6 +68,15 @@ function Main() {
       });
       setSocketEvent(true);
     }
+    if (socket.current) {
+      socket.current.on("OnlineUsers", (data) => {
+        console.log("Online Users Socket", data);
+        dispatch({
+          type: reducerCases.SET_ONLINE_USERS,
+          onlineUsers: data.onlineUsers,
+        });
+      });
+    }
   }, [socket.current]);
 
   useEffect(() => {
@@ -81,10 +90,6 @@ function Main() {
           dispatch({
             type: reducerCases.SET_MESSAGES,
             messages: response.data.messages,
-          });
-          dispatch({
-            type: reducerCases.IS_ONLINE,
-            isOnline: response.data?.isOnline,
           });
         }
       } catch (error) {

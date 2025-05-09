@@ -8,7 +8,8 @@ import { useStateProvider } from "@/context/StateContext";
 import { reducerCases } from "@/context/constants";
 
 function ChatHeader() {
-  const [{ currentChatUser, isOnline }, dispatch] = useStateProvider();
+  const [{ currentChatUser, onlineUsers }, dispatch] = useStateProvider();
+  console.log("Online Users", onlineUsers);
 
   return (
     <div className="h-16 px-4 py-3 flex justify-between items-center bg-panel-header-background z-10">
@@ -22,7 +23,9 @@ function ChatHeader() {
             </span>
           </span>
           <span className="text-secondary text-sm">
-            {isOnline ? "Online" : "Offline"}
+            {onlineUsers?.some((id) => id === currentChatUser?.id)
+              ? "Online"
+              : "Offline"}
           </span>
         </div>
       </div>

@@ -7,8 +7,9 @@ export const initialState = {
   currentChatUser: undefined,
   messages: [],
   socket: undefined,
-  isOnline: false,
   messagesSearch: false,
+  userContacts: [],
+  onlineUsers: [],
 };
 
 const reducer = (state, action) => {
@@ -29,13 +30,13 @@ const reducer = (state, action) => {
     case reducerCases.ADD_MESSAGE:
       return { ...state, messages: [...state.messages, action.newMessage] };
 
-    case reducerCases.IS_ONLINE:
-      return {
-        ...state,
-        isOnline: action.isOnline,
-      };
     case reducerCases.SET_MESSAGES_SEARCH:
       return { ...state, messagesSearch: !state.messagesSearch };
+
+    case reducerCases.SET_USER_CONTACTS:
+      return { ...state, userContacts: action.userContacts };
+    case reducerCases.SET_ONLINE_USERS:
+      return { ...state, onlineUsers: action.onlineUsers };
     default:
       return state;
   }

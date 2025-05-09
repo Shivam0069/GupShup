@@ -2,17 +2,33 @@ import React from "react";
 import Avatar from "../common/Avatar";
 import { useStateProvider } from "@/context/StateContext";
 import { reducerCases } from "@/context/constants";
+import { calculateTime } from "@/utils/CalculateTime";
+import MessageStatus from "../common/MessageStatus";
+import { FaCamera, FaMicrophone } from "react-icons/fa";
 
 function ChatLIstItem({ data, isContactPage = false }) {
   const [{ currentChatUser, userInfo }, dispatch] = useStateProvider();
   const handleContactClick = () => {
-    dispatch({
-      type: reducerCases.CHANGE_CURRENT_CHAT_USER,
-      user: { ...data },
-    });
-    dispatch({
-      type: reducerCases.SET_ALL_CONTACTS_PAGE,
-    });
+    if (!isContactPage) {
+      dispatch({
+        type: reducerCases.CHANGE_CURRENT_CHAT_USER,
+        user: {
+          name: data.name,
+          about: data.about,
+          email: data.email,
+          profilePicture: data.profilePicture,
+          id: userInfo.id === data.senderId ? data.receiverId : data.senderId,
+        },
+      });
+    } else {
+      dispatch({
+        type: reducerCases.CHANGE_CURRENT_CHAT_USER,
+        user: { ...data },
+      });
+      dispatch({
+        type: reducerCases.SET_ALL_CONTACTS_PAGE,
+      });
+    }
   };
   return (
     <div
@@ -30,6 +46,19 @@ function ChatLIstItem({ data, isContactPage = false }) {
           <div>
             <span className="text-white text-base">{data?.name}</span>
           </div>
+          {!isContactPage && (
+            <div>
+              <span
+                className={`${
+                  !data.totalUnreadMessages > 0
+                    ? "text-secondary"
+                    : "text-icon-green"
+                } text-sm `}
+              >
+                {calculateTime(data.createdAt)}
+              </span>
+            </div>
+          )}
         </div>
         <div
           className="flex border-b border-conversation-border pb-2 pt-1 pr-2
@@ -37,8 +66,36 @@ function ChatLIstItem({ data, isContactPage = false }) {
         >
           <div className="flex justify-between w-full">
             <span className="text-sm line-clamp-1 text-secondary">
-              {data?.about || "\u00A0"}
+              {isContactPage ? (
+                data?.about || "\u00A0"
+              ) : (
+                <div className="flex items-center gap-1 max-w-[200px] sm:max-w-[250px] md:max-w-[300px] lg:max-w-[200px] xl:max-w-[300px] ">
+                  {data.senderId === userInfo.id && (
+                    <MessageStatus messageStatus={data.messageStatus} />
+                  )}
+                  {data.type === "text" && (
+                    <span className="truncate">{data.message}</span>
+                  )}
+                  {data.type === "audio" && (
+                    <span className="flex gap-1 items-center">
+                      <FaMicrophone className="text-panel-header-icon" />
+                      Audio
+                    </span>
+                  )}
+                  {data.type === "image" && (
+                    <span className="flex gap-1 items-center">
+                      <FaCamera className="text-panel-header-icon" />
+                      Image
+                    </span>
+                  )}
+                </div>
+              )}
             </span>
+            {data.totalUnreadMessages > 0 && (
+              <span className="bg-icon-green rounded-full px-[5px] text-sm">
+                {data.totalUnreadMessages}
+              </span>
+            )}
           </div>
         </div>
         <div

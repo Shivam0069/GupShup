@@ -33,6 +33,9 @@ io.on("connection", (socket) => {
     console.log("User connected:", userId, socket.id);
     onlineUsers.set(userId, socket.id);
   });
+  socket.emit("OnlineUsers", {
+    onlineUsers: Array.from(onlineUsers.keys()),
+  });
   socket.on("send-msg", (data) => {
     const sendUserSocket = onlineUsers.get(data.to);
     if (sendUserSocket) {
@@ -50,5 +53,8 @@ io.on("connection", (socket) => {
         break;
       }
     }
+    socket.emit("OnlineUsers", {
+      onlineUsers: Array.from(onlineUsers.keys()),
+    });
   });
 });
