@@ -6,7 +6,10 @@ import ChatLIstItem from "./ChatLIstItem";
 import { reducerCases } from "@/context/constants";
 
 function List() {
-  const [{ userInfo, userContacts }, dispatch] = useStateProvider();
+  const [
+    { userInfo, userContacts, filteredContacts, contactSearch },
+    dispatch,
+  ] = useStateProvider();
 
   useEffect(() => {
     const getContacts = async () => {
@@ -32,9 +35,15 @@ function List() {
   }, [userInfo]);
   return (
     <div className="bg-search-input-container-background flex-auto overflow-auto max-h-full custom-scrollbar">
-      {userContacts.map((contact) => (
-        <ChatLIstItem data={contact} key={contact.id} />
-      ))}
+      {filteredContacts && filteredContacts.length > 0
+        ? filteredContacts.map((contact) => (
+            <ChatLIstItem data={contact} key={contact.id} />
+          ))
+        : userContacts?.length > 0 && contactSearch.length === 0
+        ? userContacts.map((contact) => (
+            <ChatLIstItem data={contact} key={contact.id} />
+          ))
+        : null}
     </div>
   );
 }
