@@ -32,9 +32,9 @@ io.on("connection", (socket) => {
   socket.on("add-user", (userId) => {
     console.log("User connected:", userId, socket.id);
     onlineUsers.set(userId, socket.id);
-  });
-  socket.emit("OnlineUsers", {
-    onlineUsers: Array.from(onlineUsers.keys()),
+    io.emit("OnlineUsers", {
+      onlineUsers: Array.from(onlineUsers.keys()),
+    });
   });
   socket.on("send-msg", (data) => {
     const sendUserSocket = onlineUsers.get(data.to);
@@ -53,7 +53,7 @@ io.on("connection", (socket) => {
         break;
       }
     }
-    socket.emit("OnlineUsers", {
+    io.emit("OnlineUsers", {
       onlineUsers: Array.from(onlineUsers.keys()),
     });
   });

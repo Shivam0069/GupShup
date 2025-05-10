@@ -70,7 +70,6 @@ function Main() {
     }
     if (socket.current) {
       socket.current.on("OnlineUsers", (data) => {
-        console.log("Online Users Socket", data);
         dispatch({
           type: reducerCases.SET_ONLINE_USERS,
           onlineUsers: data.onlineUsers,
