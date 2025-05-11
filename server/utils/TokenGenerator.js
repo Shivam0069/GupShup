@@ -57,6 +57,7 @@ export function generateToken04(
 ) {
   if (!appId || typeof appId !== "number") {
     // Check if appID is valid
+    console.log(1);
     throw {
       errorCode: ErrorCode.appIDInvalid,
       errorMessage: "appID invalid",
@@ -64,6 +65,8 @@ export function generateToken04(
   }
   if (!userId || typeof userId !== "string") {
     // Check if userId is valid
+    console.log(2);
+
     throw {
       errorCode: ErrorCode.userIDInvalid,
       errorMessage: "userId invalid",
@@ -71,6 +74,8 @@ export function generateToken04(
   }
   if (!secret || typeof secret !== "string" || secret.length !== 32) {
     // Check if secret is valid
+    console.log(3);
+
     throw {
       errorCode: ErrorCode.secretInvalid,
       errorMessage: "secret must be a 32 byte string",
@@ -78,6 +83,8 @@ export function generateToken04(
   }
   if (!effectiveTimeInSeconds || typeof effectiveTimeInSeconds !== "number") {
     // Check if effectiveTimeInSeconds is valid
+    console.log(4);
+
     throw {
       errorCode: ErrorCode.effectiveTimeInSecondsInvalid,
       errorMessage: "effectiveTimeInSeconds invalid",
