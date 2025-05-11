@@ -165,7 +165,7 @@ function CaptureAudio({ hide }) {
           },
         });
         if (response.status === 201) {
-          socket.current.emit(SocketCases.SEND_MESSAGE, {
+          socket.current.emit(SocketCases.SEND_MSG, {
             from: userInfo?.id,
             to: currentChatUser?.id,
             message: response.data.message,

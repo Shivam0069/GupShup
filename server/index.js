@@ -4,6 +4,7 @@ import { Server } from "socket.io";
 import dotenv from "dotenv";
 import AuthRoutes from "./routes/AuthRoutes.js";
 import MessageRoutes from "./routes/MessageRoutes.js";
+import Actions from "./utils/Actions.js";
 dotenv.config();
 const app = express();
 
@@ -29,23 +30,62 @@ global.onlineUsers = new Map();
 
 io.on("connection", (socket) => {
   global.chatSocket = socket;
-  socket.on("add-user", (userId) => {
+
+  socket.on(Actions.ADD_USER, (userId) => {
     console.log("User connected:", userId, socket.id);
     onlineUsers.set(userId, socket.id);
-    io.emit("OnlineUsers", {
+    io.emit(Actions.ONLINE_USERS, {
       onlineUsers: Array.from(onlineUsers.keys()),
     });
   });
-  socket.on("send-msg", (data) => {
+
+  socket.on(Actions.SEND_MSG, (data) => {
     const sendUserSocket = onlineUsers.get(data.to);
     if (sendUserSocket) {
-      socket.to(sendUserSocket).emit("msg-receive", {
+      socket.to(sendUserSocket).emit(Actions.MSG_RECEIVE, {
         from: data.from,
         message: data.message,
       });
     }
   });
-  socket.on("disconnect", () => {
+
+  socket.on(Actions.OUTGOING_VOICE_CALL, (data) => {
+    const sendUserSocket = onlineUsers.get(data.to);
+    if (sendUserSocket) {
+      socket.to(sendUserSocket).emit(Actions.INCOMING_VOICE_CALL, {
+        from: data.from,
+        callType: data.callType,
+        roomId: data.roomId,
+      });
+    }
+  });
+
+  socket.on(Actions.OUTGOING_VIDEO_CALL, (data) => {
+    const sendUserSocket = onlineUsers.get(data.to);
+    if (sendUserSocket) {
+      socket.to(sendUserSocket).emit(Actions.INCOMING_VIDEO_CALL, {
+        from: data.from,
+        callType: data.callType,
+        roomId: data.roomId,
+      });
+    }
+  });
+
+  socket.on(Actions.REJECT_CALL, (data) => {
+    const sendUserSocket = onlineUsers.get(data.from);
+    if (sendUserSocket) {
+      socket.to(sendUserSocket).emit(Actions.CALL_REJECTED);
+    }
+  });
+
+  socket.on(Actions.ACCEPT_INCOMING_CALL, ({ id }) => {
+    const sendUserSocket = onlineUsers.get(id);
+    if (sendUserSocket) {
+      socket.to(sendUserSocket).emit(Actions.CALL_ACCEPTED);
+    }
+  });
+
+  socket.on(Actions.DISCONNECT, () => {
     for (const [userId, socketId] of onlineUsers.entries()) {
       if (socketId === socket.id) {
         onlineUsers.delete(userId);
@@ -53,7 +93,7 @@ io.on("connection", (socket) => {
         break;
       }
     }
-    io.emit("OnlineUsers", {
+    io.emit(Actions.ONLINE_USERS, {
       onlineUsers: Array.from(onlineUsers.keys()),
     });
   });
