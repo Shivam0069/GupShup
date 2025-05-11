@@ -84,6 +84,12 @@ io.on("connection", (socket) => {
       socket.to(sendUserSocket).emit(Actions.CALL_ACCEPTED);
     }
   });
+  socket.on("sign-out", (data) => {
+    onlineUsers.delete(data);
+    io.emit(Actions.ONLINE_USERS, {
+      onlineUsers: Array.from(onlineUsers.keys()),
+    });
+  });
 
   socket.on(Actions.DISCONNECT, () => {
     for (const [userId, socketId] of onlineUsers.entries()) {
