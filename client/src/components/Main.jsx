@@ -1,19 +1,20 @@
-import React, { useEffect, useRef, useState } from "react";
-import ChatList from "./Chatlist/ChatList";
-import Empty from "./Empty";
-import { onAuthStateChanged } from "firebase/auth";
-import { firebaseAuth } from "@/utils/FirebaseConfig";
-import { useStateProvider } from "@/context/StateContext";
-import axios from "axios";
-import { CHECK_USER_ROUTE, GET_MESSAGES, HOST } from "@/utils/ApiRoutes";
-import { useRouter } from "next/router";
 import { reducerCases, SocketCases } from "@/context/constants";
-import Chat from "./Chat/Chat";
+import { useStateProvider } from "@/context/StateContext";
+import { CHECK_USER_ROUTE, GET_MESSAGES, HOST } from "@/utils/ApiRoutes";
+import { firebaseAuth } from "@/utils/FirebaseConfig";
+import axios from "axios";
+import { onAuthStateChanged } from "firebase/auth";
+import { useRouter } from "next/router";
+import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
-import SearchMessages from "./Chat/SearchMessages";
 import VideoCall from "./Call/VideoCall";
 import VoiceCall from "./Call/VoiceCall";
+import Chat from "./Chat/Chat";
+import SearchMessages from "./Chat/SearchMessages";
+import ChatList from "./Chatlist/ChatList";
+import IncomingCall from "./common/IncomingCall";
 import IncomingVideoCall from "./common/IncomingVideoCall";
+import Empty from "./Empty";
 
 function Main() {
   const [redirectLogin, setRedirectLogin] = useState(false);
@@ -88,39 +89,39 @@ function Main() {
           onlineUsers: data.onlineUsers,
         });
       });
-    }
 
-    socket.current.on(
-      SocketCases.INCOMING_VOICE_CALL,
-      ({ from, roomId, callType }) => {
+      socket.current.on(
+        SocketCases.INCOMING_VOICE_CALL,
+        ({ from, roomId, callType }) => {
+          dispatch({
+            type: reducerCases.SET_INCOMING_VOICE_CALL,
+            incomingVoiceCall: {
+              ...from,
+              roomId,
+              callType,
+            },
+          });
+        }
+      );
+      socket.current.on(
+        SocketCases.INCOMING_VIDEO_CALL,
+        ({ from, roomId, callType }) => {
+          dispatch({
+            type: reducerCases.SET_INCOMING_VIDEO_CALL,
+            incomingVideoCall: {
+              ...from,
+              roomId,
+              callType,
+            },
+          });
+        }
+      );
+      socket.current.on(SocketCases.CALL_REJECTED, () => {
         dispatch({
-          type: reducerCases.SET_INCOMING_VOICE_CALL,
-          incomingVoiceCall: {
-            ...from,
-            roomId,
-            callType,
-          },
+          type: reducerCases.END_CALL,
         });
-      }
-    );
-    socket.current.on(
-      SocketCases.INCOMING_VIDEO_CALL,
-      ({ from, roomId, callType }) => {
-        dispatch({
-          type: reducerCases.SET_INCOMING_VIDEO_CALL,
-          incomingVideoCall: {
-            ...from,
-            roomId,
-            callType,
-          },
-        });
-      }
-    );
-    socket.current.on(SocketCases.CALL_REJECTED, () => {
-      dispatch({
-        type: reducerCases.END_CALL,
       });
-    });
+    }
   }, [socket.current]);
 
   useEffect(() => {
@@ -147,7 +148,7 @@ function Main() {
   return (
     <>
       {incomingVideoCall && <IncomingVideoCall />}
-      {incomingVoiceCall && <IncomingVoiceCall />}
+      {incomingVoiceCall && <IncomingCall />}
       {videoCall && (
         <div className="h-screen w-screen max-h-full overflow-hidden">
           <VideoCall />

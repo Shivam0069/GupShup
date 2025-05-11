@@ -1,4 +1,4 @@
-import { reducerCases } from "@/context/constants";
+import { reducerCases, SocketCases } from "@/context/constants";
 import { useStateProvider } from "@/context/StateContext";
 import Image from "next/image";
 import React, { useState } from "react";
@@ -9,6 +9,9 @@ function Container({ data }) {
   const [callAccepted, setCallAccepted] = useState(false);
 
   const endCall = () => {
+    socket.current.emit(SocketCases.REJECT_CALL, {
+      from: data.id,
+    });
     dispatch({
       type: reducerCases.END_CALL,
     });
