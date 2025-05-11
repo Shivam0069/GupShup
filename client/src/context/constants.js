@@ -16,6 +16,7 @@ export const reducerCases = {
   END_CALL: "END_CALL",
   SET_INCOMING_VOICE_CALL: "SET_INCOMING_VOICE_CALL",
   SET_INCOMING_VIDEO_CALL: "SET_INCOMING_VIDEO_CALL",
+  SET_EXIT_CHAT: "SET_EXIT_CHAT",
 };
 
 export const SocketCases = {
